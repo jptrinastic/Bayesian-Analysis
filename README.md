@@ -4,5 +4,7 @@ Several worked examples and descriptions, with supporting code, that describe ba
 ## Required Libraries (most recent versions should be fine)
 
 numpy
+
 scipy
+
 matplotlib
