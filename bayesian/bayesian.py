@@ -2,6 +2,7 @@
 
 # Libraries
 import sys
+import math
 import numpy as np
 import pandas as pd
 import scipy.stats as sps
@@ -490,9 +491,51 @@ class BayesBinomial(BayesBasic):
         
         return lh
         
+class BayesPaint(BayesBasic):
+    """
+    Provides likelihood function for two-dimensional
+    paintball problem.
+    Assumes:
+    1) hypotheses are written as 2D numpy array;
+    2) probability of a shot position based on speed
+    (change in x-position w/r/t angle of shooter)
+    """
+    
+    def likelihood(self, inData):
+        """
+        Likelihood function for 2D paintball process.
+        Assumes that 
         
-
-
-
-
+        Parameters
+        ----------
+        inData: float
+            input data for current iteration
+            
+        Returns
+        -------
+        likelihood: float
+        """
+        
+        lh = np.zeros(len(self.hypotheses))
+        
+        # Calculation possible locations (xs) from hypotheses
+        locs = list(set(self.hypotheses[:,0]))
+        
+        # Loop through all hypotheses
+        for i, row in enumerate(self.hypotheses):
+            # Define a, b position for given hypothesis
+            a, b = row
+            
+            # Then, create pmf for x given a, b
+            # - calculate angle for each x
+            thetas = np.arctan((locs-a)/b)
+            # - calculate probability using speed 1/(dx/dtheta)
+            probs = 1.0 / (b / (np.cos(thetas)*np.cos(thetas)))
+            probs = self._normalize(probs)
+            
+            #Then, likelihood is probability of inData
+            pos = np.where(locs==inData)[0]
+            lh[i] = probs[pos]
+               
+        return lh        
 
